@@ -27,13 +27,13 @@
   return [FBSDKSettings appID];
 }
 
-- (void)encodeWithCoder:(nonnull NSCoder *)coder {
-  [coder encodeObject:self.appID forKey:@"appID"];
-}
+- (NSDictionary *)dictionaryRepresentation
+{
+  if ([self appID]) {
+    return @{@"appID": [self appID]};
+  }
 
-- (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder {
-  // make this a fatal
-  return nil;
+  return @{};
 }
 
 @end

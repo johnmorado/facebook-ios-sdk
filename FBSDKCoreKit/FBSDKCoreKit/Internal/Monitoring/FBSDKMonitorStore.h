@@ -16,23 +16,38 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import <XCTest/XCTest.h>
+#import <Foundation/Foundation.h>
 
 #import "FBSDKCoreKit+Internal.h"
-#import "TestMonitorEntry.h"
 
-@interface FBSDKMonitorEntryTests : XCTestCase
+NS_ASSUME_NONNULL_BEGIN
+
+@interface FBSDKMonitorStore : NSObject
+
+@property (nonatomic, weak) NSString *filePath;
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)initWithFilePath:(NSString *)filePath NS_DESIGNATED_INITIALIZER;
+
+/**
+ Persists an array of dictionary representable objects to local storage.
+ Underlying storage uses a UTF8 encoded JSON string.
+
+ - Important: Persisting always clears the underlying storage.
+ If you do not want to overwrite what is on disk, call `retrieveEntryData`
+ prior to calling this method.
+ */
+- (void)persist:(NSArray<id<FBSDKDictionaryRepresentable>> *)entries;
+
+/**
+ Retrieves any stored entries in the form of a UTF8 encoded JSON String.
+
+ - Important: Retrieving entry data clears the underlying storage.
+ If you need to persist the data after retrieving you must call `persist` again.
+ */
+- (NSData * _Nullable)retrieveEntryData;
+
 @end
 
-@implementation FBSDKMonitorEntryTests
-
-- (void)testAppID {
-  [FBSDKSettings setAppID:@"abc123"];
-  FBSDKMonitorEntry *entry = [TestMonitorEntry testEntry];
-  NSDictionary *dict = [entry dictionaryRepresentation];
-
-  XCTAssertEqualObjects([dict objectForKey:@"appID"], @"abc123",
-                 @"A monitor entry's appID should be gleaned from settings");
-}
-
-@end
+NS_ASSUME_NONNULL_END
